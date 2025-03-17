@@ -1,7 +1,7 @@
 // example script for hash generation
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const password = 'rftgyh';
+const password = 'password';
 
 bcrypt
   .hash(password, saltRounds)
