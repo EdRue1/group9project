@@ -1,18 +1,19 @@
+<!-- please refer to prompt three in the sources folder -->
 <!-- This view allows a user to create client information. -->
 <template>
   <main>
-    <!--Header-->
+    <!-- Header -->
     <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">
       Client Intake Form
     </h1>
     <div class="px-10 py-20">
-      <!-- form field -->
-      <!-- @submit.prevent stops the submit event from reloading the page-->
+      <!-- Form field -->
+      <!-- @submit.prevent stops the submit event from reloading the page -->
       <form @submit.prevent="submitForm">
-        <!-- grid container -->
+        <!-- Grid container for personal details -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
           <h2 class="text-2xl font-bold">Personal Details</h2>
-          <!--First Name Input Field-->
+          <!-- First Name Input Field -->
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">First Name</span>
@@ -27,7 +28,7 @@
             </span>
           </div>
 
-          <!--Middle Name Input Field-->
+          <!-- Middle Name Input Field -->
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Middle Name</span>
@@ -37,7 +38,7 @@
             </label>
           </div>
 
-          <!--Last Name Input Field-->
+          <!-- Last Name Input Field -->
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Last Name</span>
@@ -53,7 +54,7 @@
           </div>
 
           <div></div>
-          <!--Email Input Field-->
+          <!-- Email Input Field -->
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Email</span>
@@ -103,7 +104,7 @@
           </div>
         </div>
 
-        <!-- grid container -->
+        <!-- Grid container for address details -->
         <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
           <h2 class="text-2xl font-bold">Address Details</h2>
           <!-- Address 1 Input Field -->
@@ -175,86 +176,83 @@
   </main>
 </template>
 
-<script>
-//import functionalities for validation
-import useVuelidate from '@vuelidate/core'
-import { required, email, numeric, minLength, maxLength } from '@vuelidate/validators'
-import { createClient } from '../api/api'
-import { useToast } from 'vue-toastification'
+<!-- change from options API to composition API -->
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import useVuelidate from '@vuelidate/core';
+import { required, email, numeric, minLength, maxLength } from '@vuelidate/validators';
+import { createClient } from '../api/api';
+import { useToast } from 'vue-toastification';
 
-//Notifications
-const toast = useToast()
+// Initialize toast for notifications
+const toast = useToast();
+const router = useRouter();
 
-export default {
-  data() {
-    return {
-      //client variable to hold new client information
-      client: {
-        firstName: null,
-        middleName: null,
-        lastName: null,
-        email: null,
-        phoneNumber: {
-          primary: null,
-          alternate: null
-        },
-        address: {
-          line1: null,
-          line2: null,
-          city: null,
-          county: null,
-          zip: null
-        },
-      }
-    }
+// Reactive state for client data
+const client = ref({
+  firstName: null,
+  middleName: null,
+  lastName: null,
+  email: null,
+  phoneNumber: {
+    primary: null,
+    alternate: null,
   },
-  setup() {
-    // Register Vuelidate
-    const v$ = useVuelidate();
-    return { v$ };
+  address: {
+    line1: null,
+    line2: null,
+    city: null,
+    county: null,
+    zip: null,
   },
-  validations() {
-    // validations for client
-    return {
-      client: {
-        firstName: { required },
-        lastName: { required },
-        email: { required, email },
-        phoneNumber: {
-          primary: {
-            required,
-            numeric,
-            minLength: minLength(10),
-            maxLength: maxLength(10),
-          },
-        },
-        address: {
-          city: { required },
-        },
+});
+
+// Vuelidate validation rules
+const rules = {
+  client: {
+    firstName: { required },
+    lastName: { required },
+    email: { required, email },
+    phoneNumber: {
+      primary: {
+        required,
+        numeric,
+        minLength: minLength(10),
+        maxLength: maxLength(10),
       },
-    };
-  },
-  methods: {
-    // method called when user submits the form
-    async submitForm() {
-      // Trigger validation
-      this.v$.$validate();
-
-      if (this.v$.$error) {
-        // Form is invalid, do not proceed
-        return;
-      }
-
-      try {
-        const response = await createClient(this.client);
-        this.$router.push('/findclient')
-        toast.success(response)
-      } catch (error) {
-        toast.error(error)
-      }
     },
+    address: {
+      city: { required },
+    },
+  },
+};
+
+// Initialize Vuelidate with the rules and client data
+const v$ = useVuelidate(rules, { client });
+
+// Method to handle form submission
+const submitForm = async () => {
+  // Trigger validation
+  v$.value.$validate();
+
+  if (v$.value.$error) {
+    // Form is invalid, do not proceed
+    return;
   }
-}
+
+  try {
+    // Call the API to create a new client
+    const response = await createClient(client.value);
+    // Redirect to the find client page after successful creation
+    router.push('/findclient');
+    // Show success notification
+    toast.success(response);
+  } catch (error) {
+    // Show error notification if something goes wrong
+    toast.error(error);
+  }
+};
 </script>
 
 

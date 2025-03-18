@@ -1,4 +1,4 @@
-first, we used AI prompts to set up our MongoDB cluster/database.
+first, we used AI prompts to set up our MongoDB cluster/database. then, the rest of the prompts pertained to the code
 
 -------------
 Prompt 1
@@ -81,3 +81,44 @@ SSL/TLS: MongoDB Atlas requires SSL/TLS for connections. Ensure your application
 
 That's it! You now have a fully functional MongoDB Atlas database ready to use with your Node.js backend.
 
+
+
+-------------
+Prompt 2
+-------------
+
+*attached initial clientdetails.vue file*
+
+can you change the code in here from options to composition API? also check for any mistakes, and add meaningful comments
+
+---
+
+answer is pasted in clientdetails.vue file
+
+
+
+-------------
+Prompt 3
+-------------
+
+*attached initial clientform.vue file*
+
+can you change the code in here from options to composition API? also check for any mistakes, and add meaningful comments
+
+---
+
+answer is pasted in clientform.vue file
+
+
+
+-------------
+Prompt 4
+-------------
+
+*attached initial eventDetails.vue file*
+
+can you change the code in here from options to composition API? also check for any mistakes, and add meaningful comments
+
+---
+
+answer is pasted in eventDetails.vue file
