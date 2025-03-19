@@ -104,7 +104,7 @@ export default {
   },
   data() {
     return {
-      orgName: "Dataplatform",
+      orgName: "Community Garden",
     };
   },
   async created() {
