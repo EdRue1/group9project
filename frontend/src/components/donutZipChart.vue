@@ -4,28 +4,32 @@
   </div>
 </template>
 
-<script>
-import { Chart, registerables } from 'chart.js'
-Chart.register(...registerables)
-//define props (label and chartData)
-export default {
-  props: {
-    label: {
-      type: Array
-    },
-    chartData: {
-      type: Array
-    }
-  },
-  async mounted() { //uses the data to load the chart's values
-    await new Chart(this.$refs.zipChart, {
+<script setup>
+import { ref, onMounted } from 'vue';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
+
+// Define props
+const props = defineProps({
+  label: Array,
+  chartData: Array
+});
+
+// Reference to the chart canvas
+const zipChart = ref(null);
+
+// Create the chart when the component is mounted
+onMounted(() => {
+  if (zipChart.value) {
+    new Chart(zipChart.value, {
       type: 'doughnut',
       data: {
-        labels: this.label,
+        labels: props.label,
         datasets: [
           {
             borderWidth: 1,
-            data: this.chartData // Update this line
+            data: props.chartData
           }
         ]
       },
@@ -42,7 +46,7 @@ export default {
         responsive: true,
         maintainAspectRatio: true
       }
-    })
-  },
-}
+    });
+  }
+});
 </script>
