@@ -24,14 +24,14 @@
           <label class="block">
             <input type="text"
               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              v-model="name" v-on:keyup.enter="handleSubmitForm" placeholder="Enter event name" />
+              v-model="name" @keyup.enter="handleSubmitForm" placeholder="Enter event name" />
           </label>
         </div>
         <!-- Displays event date search field -->
         <div class="flex flex-col" v-if="searchBy === 'Event Date'">
           <input
             class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            type="date" v-model="eventDate" v-on:keyup.enter="handleSubmitForm" />
+            type="date" v-model="eventDate" @keyup.enter="handleSubmitForm" />
         </div>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
@@ -83,92 +83,66 @@
   </main>
 </template>
 
-<script>
-import { getEvents, searchEvents } from '../api/api'
-import { useToast } from 'vue-toastification'
+<script setup>
+import { ref, onMounted } from 'vue';
+import { getEvents, searchEvents } from '../api/api';
+import { useToast } from 'vue-toastification';
 
-//Notifications
-const toast = useToast()
+// Notifications
+const toast = useToast();
 
-export default {
-  data() {
-    return {
-      //variable to hold all events for the organization
-      events: null,
-      // Parameters for search to occur
-      searchBy: null,
-      name: null,
-      eventDate: null,
-      // variable stores the ID of the row that the mouse is currently hovering over (to highlight the row red)
-      hoverId: null,
-    }
-  },
-  mounted() {
-    // when component is mounted, load the data
-    this.loadData();
-  },
-  methods: {
-    // method called when component is mounted
-    async loadData() {
-      // Resets variables used for search
-      this.searchBy = null
-      this.name = null
-      this.eventDate = null
+// Reactive variables
+const events = ref(null);
+const searchBy = ref(null);
+const name = ref(null);
+const eventDate = ref(null);
+const hoverId = ref(null);
+const isLoading = ref(false);
 
-      // show loading wheel
-      this.isLoading = true;
-      // get list of events
-      try {
-        const response = await getEvents();
-        this.events = response;
-      } catch (error) {
-        toast.error('loadData error', error)
-      }
-    },
+// Fetch all events when the component mounts
+onMounted(async () => {
+  await loadData();
+});
 
-    // method called when user searches for an event
-    async handleSubmitForm() {
-      // if user searches by event name
-      if (this.searchBy === 'Event Name') {
-        if (this.name) {
-          try {
-            const query = {
-              searchBy: 'name',
-              name: this.name
-            };
-            const response = await searchEvents(query);
-            this.events = response;
-          } catch (error) {
-            toast.error('Error searching events', error)
-          }
-        }
-        // if user searches by event date
-      } else if (this.searchBy === 'Event Date') {
-        if (this.eventDate) {
-          try {
-            const eventDate = new Date(this.eventDate);
-            const formattedDate = eventDate.toISOString().substring(0, 10);
-            const query = {
-              searchBy: 'date',
-              eventDate: formattedDate
-            };
-            const response = await searchEvents(query);
-            this.events = response;
-          } catch (error) {
-            toast.error('Error searching events:', error)
-          }
-        }
-      }
-    },
+// Function to load all events
+async function loadData() {
+  searchBy.value = null;
+  name.value = null;
+  eventDate.value = null;
+  isLoading.value = true;
 
-    // method called for each event date so it will be formatted correctly on the table
-    formatDate(date) {
-      const isoDate = new Date(date);
-      const year = isoDate.getUTCFullYear();
-      const month = String(isoDate.getUTCMonth() + 1).padStart(2, '0');
-      const day = String(isoDate.getUTCDate()).padStart(2, '0');
-      return `${month}/${day}/${year}`;
-    },
-  },
+  try {
+    const response = await getEvents();
+    events.value = response;
+  } catch (error) {
+    toast.error('loadData error', error);
+  }
 }
+
+// Function to handle event search
+async function handleSubmitForm() {
+  try {
+    if (searchBy.value === 'Event Name' && name.value) {
+      const query = { searchBy: 'name', name: name.value };
+      events.value = await searchEvents(query);
+    } else if (searchBy.value === 'Event Date' && eventDate.value) {
+      const formattedDate = new Date(eventDate.value).toISOString().substring(0, 10);
+      const query = { searchBy: 'date', eventDate: formattedDate };
+      events.value = await searchEvents(query);
+    }
+  } catch (error) {
+    toast.error('Error searching events:', error);
+  }
+}
+
+// Function to format dates
+function formatDate(date) {
+  const isoDate = new Date(date);
+  const year = isoDate.getUTCFullYear();
+  const month = String(isoDate.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(isoDate.getUTCDate()).padStart(2, '0');
+  return `${month}/${day}/${year}`;
+}
+// Used ChatGPT to refactor from option to composite API.
 </script>
+
