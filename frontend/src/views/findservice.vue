@@ -1,4 +1,3 @@
-<!-- This view shows a list of services. Users can search for services and click on a service to be redirected to another component that displays the service's details -->
 <template>
   <main>
     <div>
@@ -24,7 +23,7 @@
           <label class="block">
             <input type="text"
               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              v-model="name" v-on:keyup.enter="handleSubmitForm" placeholder="Enter service name" />
+              v-model="name" @keyup.enter="handleSubmitForm" placeholder="Enter service name" />
           </label>
         </div>
         <!--Display service description search field-->
@@ -32,7 +31,7 @@
           <label class="block">
             <input type="text"
               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              v-model="description" v-on:keyup.enter="handleSubmitForm" placeholder="Enter service description" />
+              v-model="description" @keyup.enter="handleSubmitForm" placeholder="Enter service description" />
           </label>
         </div>
       </div>
@@ -83,79 +82,54 @@
   </main>
 </template>
 
-<script>
-import { getServices, searchServices } from '../api/api'
-import { useToast } from 'vue-toastification'
+<script setup>
+import { ref, onMounted } from 'vue';
+import { getServices, searchServices } from '../api/api';
+import { useToast } from 'vue-toastification';
 
-//Notifications
-const toast = useToast()
+// Notifications
+const toast = useToast();
 
-export default {
-  data() {
-    return {
-      //variable to hold the services for the organization
-      services: null,
-      // Parameters for search to occur
-      searchBy: null,
-      name: null,
-      description: null,
-      // variable stores the ID of the row that the mouse is currently hovering over (to highlight the row red)
-      hoverId: null,
-    }
-  },
-  mounted() {
-    // when component is mounted, load the data
-    this.loadData();
-  },
-  methods: {
-    // method called when component is mounted
-    async loadData() {
-      // Resets all the variables
-      this.searchBy = ''
-      this.name = ''
-      this.description = ''
+// Reactive variables
+const services = ref(null);
+const searchBy = ref(null);
+const name = ref(null);
+const description = ref(null);
+const hoverId = ref(null);
 
-      // get list of services
-      try {
-        const response = await getServices();
-        this.services = response;
-      } catch (error) {
-        toast.error(error)
-      }
-    },
+// Fetch all services when the component mounts
+onMounted(async () => {
+  await loadData();
+});
 
-    // method called when user searches for a service
-    async handleSubmitForm() {
-      // if user searches by service name
-      if (this.searchBy === 'Service Name') {
-        if (this.name) {
-          try {
-            const query = {
-              searchBy: 'name',
-              name: this.name
-            }
-            const response = await searchServices(query)
-            this.services = response;
-          } catch (error) {
-            toast.error(error)
-          }
-        }
-        // if user searches by service description
-      } else if (this.searchBy === 'Service Description') {
-        if (this.description) {
-          try {
-            const query = {
-              searchBy: 'description',
-              description: this.description
-            }
-            const response = await searchServices(query)
-            this.services = response;
-          } catch (error) {
-            toast.error('Error searching services:', error)
-          }
-        }
-      }
-    },
-  },
+// Function to load all services
+async function loadData() {
+  searchBy.value = '';
+  name.value = '';
+  description.value = '';
+
+  try {
+    const response = await getServices();
+    services.value = response;
+  } catch (error) {
+    toast.error(error);
+  }
 }
+
+// Function to search for services
+async function handleSubmitForm() {
+  try {
+    if (searchBy.value === 'Service Name' && name.value) {
+      const query = { searchBy: 'name', name: name.value };
+      services.value = await searchServices(query);
+    } else if (searchBy.value === 'Service Description' && description.value) {
+      const query = { searchBy: 'description', description: description.value };
+      services.value = await searchServices(query);
+    }
+  } catch (error) {
+    toast.error('Error searching services:', error);
+  }
+}
+
+// Used ChatGPT for help to refactor from option to composite API. 
 </script>
