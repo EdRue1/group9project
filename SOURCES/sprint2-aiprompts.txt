@@ -122,3 +122,32 @@ can you change the code in here from options to composition API? also check for 
 ---
 
 answer is pasted in eventDetails.vue file
+
+
+-------------
+Prompt 5
+-------------
+*Attached initial donutZipChart.vue file*
+
+"Could you check this file to see if it's in option api, if it is change it to composition api and provide comments throughout."
+
+Response is pasted in the donutZipChart.vue 
+
+
+-------------
+Prompt 6
+-------------
+*Attached initial findevents.vue file*
+
+"Could you check this file to see if it's in option api, if it is change it to composition api and provide comments throughout."
+
+Response is pasted in the findevents.vue file*
+
+-------------
+Prompt 7
+-------------
+*Attached initial findservice.vue file*
+
+"Could you check this file to see if it's in option api, if it is change it to composition api and provide comments throughout."
+
+Response is pasted in the findservice.vue file*
