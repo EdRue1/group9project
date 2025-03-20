@@ -31,22 +31,32 @@
     </div>
 </template>
 
+<!-- Changes from options API to Composition API -->
 <script>
+  import { ref } from 'vue'
   import { useLoggedInUserStore } from "../store/loggedInUser";
 
   export default {
-    data() {
-      return {
-        username: "",
-        password: "",
-      }
-    },
     setup() {
-      const store = useLoggedInUserStore();
-      return {
-        store
-      }
+    // Reactive references for username and password
+    const username = ref("")
+    const password = ref("")
+
+    // Access the store
+    const store = useLoggedInUserStore()
+
+    // Method to handle login
+    const login = () => {
+      store.login(username.value, password.value)
+    }
+
+    // Return necessary variables and methods to the template
+    return {
+      username,
+      password,
+      login
     }
   }
+}
 </script>
 
