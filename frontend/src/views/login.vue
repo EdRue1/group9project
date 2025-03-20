@@ -54,7 +54,8 @@
     return {
       username,
       password,
-      login
+      login,
+      store
     }
   }
 }
