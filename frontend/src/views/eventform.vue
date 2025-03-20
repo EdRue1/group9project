@@ -72,7 +72,7 @@
           <h2 class="text-2xl font-bold">Services Offered at Event</h2>
           <div class="flex flex-col grid-cols-3">
             <div>
-              <ul v-if="activeServices.length" class="space-y-2">
+              <ul v-if="activeServices?.length" class="space-y-2">
                 <li v-for="service in activeServices" :key="service._id" :data-service-id="service._id"
                   class="rounded-lg border border-gray-300 p-2 hover:bg-gray-100 transition-colors relative">
                   <label class="block w-full h-full">
@@ -156,81 +156,75 @@
 
 <!-- change from options API to composition API -->
 <script setup>
-  import { ref, onMounted } from 'vue';
-  import { getClients, searchClients, getOrgName } from '../api/api';
-  import { useToast } from 'vue-toastification';
-  import { useLoggedInUserStore } from '../store/loggedInUser';
-  import { useRouter } from 'vue-router';
-  
-  // Notifications
-  const toast = useToast();
-  const router = useRouter();
-  
-  // Reactive states
-  const clients = ref(null);
-  const searchBy = ref('');
-  const firstName = ref('');
-  const lastName = ref('');
-  const phoneNumber = ref('');
-  const hoverId = ref(null);
-  const orgName = ref("Community Garden");
-  
-  const user = useLoggedInUserStore();
-  
-  async function loadData() {
-    // Resets all the variables
-    searchBy.value = '';
-    firstName.value = '';
-    lastName.value = '';
-    phoneNumber.value = '';
-  
-    // Get list of clients
-    try {
-      const response = await getClients();
-      clients.value = response;
-    } catch (error) {
-      toast.error(error);
-    }
-  }
-  
-  async function handleSubmitForm() {
-    try {
-      let query = {};
-      if (searchBy.value === 'Client Name' && (firstName.value || lastName.value)) {
-        query = { searchBy: 'name', firstName: firstName.value, lastName: lastName.value };
-      } else if (searchBy.value === 'Client Number' && phoneNumber.value) {
-        query = { searchBy: 'number', phoneNumber: phoneNumber.value };
-      }
-  
-      if (Object.keys(query).length) {
-        const response = await searchClients(query);
-        clients.value = response;
-      }
-    } catch (error) {
-      toast.error(error);
-    }
-  }
-  
-  async function fetchOrgName() {
-    try {
-      orgName.value = await getOrgName();
-    } catch (error) {
-      toast.error("Error fetching organization name");
-    }
-  }
-  
-  function logout() {
-    try {
-      user.clearSessionData();
-      router.push('/');
-    } catch (error) {
-      toast.error('Logout error:', error);
-    }
-  }
-  
-  onMounted(() => {
-    loadData();
-    fetchOrgName();
-  });
-  </script>
+import { ref, onMounted } from 'vue';
+import { useToast } from 'vue-toastification';
+import { useLoggedInUserStore } from '../store/loggedInUser';
+import { useRouter } from 'vue-router';
+import { useVuelidate } from '@vuelidate/core';  // ✅ Import Vuelidate
+import { required, helpers, minLength } from '@vuelidate/validators'; // ✅ Import validation rules
 
+// ✅ Initialize event object
+const event = ref({
+  name: '',
+  description: '',
+  date: '',
+  services: [],
+  address: {
+    line1: '',
+    line2: '',
+    city: '',
+    county: '',
+    zip: '',
+  }
+});
+
+// ✅ Define validation rules
+const rules = {
+  event: {
+    name: { required: helpers.withMessage('Event Name is required', required) },
+    date: {
+      required: helpers.withMessage('Event Date is required', required),
+      validDate: (value) => !isNaN(Date.parse(value)), // Ensures it's a valid date
+      notBeforeToday: (value) => new Date(value) >= new Date(), // Ensures date is not in the past
+    }
+  }
+};
+
+// ✅ Initialize validation instance
+const v$ = useVuelidate(rules, { event });
+
+const toast = useToast();
+const router = useRouter();
+const user = useLoggedInUserStore();
+
+// Load data when component is mounted
+onMounted(() => {
+  fetchOrgName();
+});
+
+// Function to fetch organization name
+async function fetchOrgName() {
+  try {
+    orgName.value = await getOrgName();
+  } catch (error) {
+    toast.error("Error fetching organization name");
+  }
+}
+
+// ✅ Function to handle form submission
+async function handleSubmitForm() {
+  const isFormValid = await v$.value.$validate(); // Validate form
+
+  if (!isFormValid) {
+    toast.error("Please fix validation errors before submitting.");
+    return;
+  }
+
+  try {
+    // Handle event submission logic
+    console.log("Form submitted successfully", event.value);
+  } catch (error) {
+    toast.error(error.message);
+  }
+}
+</script>
