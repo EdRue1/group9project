@@ -154,98 +154,83 @@
   </main>
 </template>
 
-<script>
-// import vuelidate validations
-import useVuelidate from '@vuelidate/core'
-import { required } from '@vuelidate/validators'
-import { getServices, createEvent } from '../api/api'
-import { useToast } from 'vue-toastification'
-
-//Notifications
-const toast = useToast()
-
-export default {
-  data() {
-    return {
-      // event variable to hold new event information
-      event: {
-        name: null,
-        description: null,
-        date: null,
-        services: [],
-        address: {
-          line1: null,
-          line2: null,
-          city: null,
-          county: null,
-          zip: null
-        },
-        attendees: [],
-      },
-      //variable to assign service IDs to event (user clicks checkboxes to add services to event)
-      activeServices: [],
-      // variable that determines which services in the List of Services checkboxes have expanded details
-      openDescriptions: [],
-    }
-  },
-  setup() {
-    // Register Vuelidate
-    const v$ = useVuelidate();
-    return { v$ };
-  },
-  validations() {
-    // validations
-    const validDate = (value) => {
-      const date = new Date(value)
-      return !isNaN(date)
-    }
-
-    // prevents form submission if new event has a date before the current date
-    const notBeforeToday = (value) => {
-      const today = new Date()
-      return value >= today.toISOString().split('T')[0]
-    }
-
-    return {
-      event: {
-        name: { required },
-        date: {
-          required,
-          validDate,
-          notBeforeToday
-        },
-      }
-    }
-  },
-  async mounted() {
-    // when component is mounted, data is loaded
+<!-- change from options API to composition API -->
+<script setup>
+  import { ref, onMounted } from 'vue';
+  import { getClients, searchClients, getOrgName } from '../api/api';
+  import { useToast } from 'vue-toastification';
+  import { useLoggedInUserStore } from '../store/loggedInUser';
+  import { useRouter } from 'vue-router';
+  
+  // Notifications
+  const toast = useToast();
+  const router = useRouter();
+  
+  // Reactive states
+  const clients = ref(null);
+  const searchBy = ref('');
+  const firstName = ref('');
+  const lastName = ref('');
+  const phoneNumber = ref('');
+  const hoverId = ref(null);
+  const orgName = ref("Community Garden");
+  
+  const user = useLoggedInUserStore();
+  
+  async function loadData() {
+    // Resets all the variables
+    searchBy.value = '';
+    firstName.value = '';
+    lastName.value = '';
+    phoneNumber.value = '';
+  
+    // Get list of clients
     try {
-        const response = await getServices();
-        this.activeServices = response.filter(item => item.status === "Active")
-      } catch (error) {
-        toast.error(error)
+      const response = await getClients();
+      clients.value = response;
+    } catch (error) {
+      toast.error(error);
+    }
+  }
+  
+  async function handleSubmitForm() {
+    try {
+      let query = {};
+      if (searchBy.value === 'Client Name' && (firstName.value || lastName.value)) {
+        query = { searchBy: 'name', firstName: firstName.value, lastName: lastName.value };
+      } else if (searchBy.value === 'Client Number' && phoneNumber.value) {
+        query = { searchBy: 'number', phoneNumber: phoneNumber.value };
       }
-  },
-  methods: {
-    // method called when user tries to create new event
-    async handleSubmitForm() {
-      // Trigger validation
-      this.v$.$validate();
+  
+      if (Object.keys(query).length) {
+        const response = await searchClients(query);
+        clients.value = response;
+      }
+    } catch (error) {
+      toast.error(error);
+    }
+  }
+  
+  async function fetchOrgName() {
+    try {
+      orgName.value = await getOrgName();
+    } catch (error) {
+      toast.error("Error fetching organization name");
+    }
+  }
+  
+  function logout() {
+    try {
+      user.clearSessionData();
+      router.push('/');
+    } catch (error) {
+      toast.error('Logout error:', error);
+    }
+  }
+  
+  onMounted(() => {
+    loadData();
+    fetchOrgName();
+  });
+  </script>
 
-      if (this.v$.$error) {
-        toast.error('Please fix input field errors')
-        // Form is invalid, do not proceed
-        return;
-      }
-
-      try {
-        const response = await createEvent(this.event);
-        this.$router.push('/findevents')
-        toast.success(response)
-      } catch (error) {
-        toast.error('error creating new event:', error)
-      }
-    },
-  },
-}
-</script>

@@ -89,44 +89,42 @@
   </main>
 </template>
 
-<script>
-import { useLoggedInUserStore } from './store/loggedInUser'
-import { getOrgName } from './api/api'
-import { useToast } from 'vue-toastification'
+<!-- change from options API to composition API -->
 
-//Notifications
-const toast = useToast()
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useLoggedInUserStore } from './store/loggedInUser';
+import { getOrgName } from './api/api';
+import { useToast } from 'vue-toastification';
+import { useRouter } from 'vue-router';
 
-export default {
-  setup() {
-    const user = useLoggedInUserStore();
-    return { user };
-  },
-  data() {
-    return {
-      orgName: "Community Garden",
-    };
-  },
-  async created() {
-    try {
-      this.orgName = await getOrgName();
-    } catch {
-      throw (error)
-    }
-  },
-  methods: {
-    logout() {
-      try {
-        this.$store.dispatch('clearSessionData');
-        this.$router.push('/')
-      } catch (error) {
-        toast.error('logout error', error)
-      }
-    },
+// Notifications
+const toast = useToast();
+const router = useRouter();
+
+// Reactive state
+const orgName = ref('Community Garden');
+const user = useLoggedInUserStore();
+
+// Fetch organization name on mount
+onMounted(async () => {
+  try {
+    orgName.value = await getOrgName();
+  } catch (error) {
+    toast.error('Error fetching organization name');
   }
-}
-</script>
+});
 
+// Logout function
+const logout = () => {
+  try {
+    user.clearSessionData();
+    router.push('/');
+  } catch (error) {
+    toast.error('Logout error:', error);
+  }
+};
+</script>
 <style scoped>
 #_container {
   background-color: #c8102e;
