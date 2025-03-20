@@ -151,3 +151,21 @@ Prompt 7
 "Could you check this file to see if it's in option api, if it is change it to composition api and provide comments throughout."
 
 Response is pasted in the findservice.vue file*
+
+-------------
+Prompt 8
+-------------
+*Attached initial servicedetails.vue file*
+
+"could you change this file from options API to composition API with comments throughout"
+
+Response is pasted in the findservice.vue file*
+
+-------------
+Prompt 9
+-------------
+*Attached initial serviceform.vue file*
+
+"could you change this file from options API to composition API with comments throughout"
+
+Response is pasted in the findservice.vue file*
