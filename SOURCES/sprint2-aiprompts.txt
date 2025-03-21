@@ -124,9 +124,11 @@ can you change the code in here from options to composition API? also check for 
 answer is pasted in eventDetails.vue file
 
 
+
 -------------
 Prompt 5
 -------------
+
 *Attached initial donutZipChart.vue file*
 
 "Could you check this file to see if it's in option api, if it is change it to composition api and provide comments throughout."
@@ -134,23 +136,34 @@ Prompt 5
 Response is pasted in the donutZipChart.vue 
 
 
+
 -------------
 Prompt 6
 -------------
-*Attached initial findevents.vue file*
+
+*Attached initial events.vue file*
 
 "Could you check this file to see if it's in option api, if it is change it to composition api and provide comments throughout."
 
+---
+
 Response is pasted in the findevents.vue file*
+
+
 
 -------------
 Prompt 7
 -------------
+
 *Attached initial findservice.vue file*
 
 "Could you check this file to see if it's in option api, if it is change it to composition api and provide comments throughout."
 
+---
+
 Response is pasted in the findservice.vue file*
+
+
 
 -------------
 Prompt 8
@@ -159,7 +172,11 @@ Prompt 8
 
 "could you change this file from options API to composition API with comments throughout"
 
-Response is pasted in the findservice.vue file*
+---
+
+Response is pasted in the servicedetails.vue file*
+
+
 
 -------------
 Prompt 9
@@ -168,4 +185,20 @@ Prompt 9
 
 "could you change this file from options API to composition API with comments throughout"
 
+---
+
 Response is pasted in the findservice.vue file*
+
+
+
+-------------
+Prompt 10
+-------------
+
+*attached initial App.vue file*
+
+i need you to check whether this file is in composition API. if not, please change it. also, please add comments throughout the code
+
+---
+
+answer is pasted in App.vue file
