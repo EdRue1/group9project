@@ -202,3 +202,17 @@ i need you to check whether this file is in composition API. if not, please chan
 ---
 
 answer is pasted in App.vue file
+
+
+
+-------------
+Prompt 11
+-------------
+
+*attached initial eventform.vue file*
+
+here is my code. can you swap this from options to composition API, and add comments throughout?
+
+---
+
+answer is pasted in eventform.vue file

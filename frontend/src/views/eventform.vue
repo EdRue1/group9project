@@ -1,230 +1,110 @@
+<!-- please refer to prompt eleven in the sources folder -->
 <!-- This view allows for the creation of a new event -->
 <template>
   <main>
     <div>
-      <!--Header-->
-      <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">
-        Create New Event
-      </h1>
+      <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Create New Event</h1>
     </div>
     <div class="px-10 py-20">
-      <!--Form-->
-      <!-- @submit.prevent stops the submit event from reloading the page-->
       <form @submit.prevent="handleSubmitForm">
-        <!-- grid container -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
           <h2 class="text-2xl font-bold">Event Details</h2>
 
-          <!-- Event Name Input Field -->
+          <!-- Event Name Input -->
           <div class="flex flex-col">
             <label class="block">
-              <span class="text-gray-700">Event Name</span>
-              <span style="color: #ff0000">*</span>
-              <input type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="event.name" />
+              <span class="text-gray-700">Event Name</span><span style="color: #ff0000">*</span>
+              <input type="text" class="w-full rounded-md border-gray-300 shadow-sm" v-model="event.name" />
             </label>
-            <!-- Validation error messages -->
-            <span v-if="v$.event.name.$error" class="text-red-500">
-              Event Name is required
-            </span>
+            <span v-if="v$.event.name.$error" class="text-red-500">Event Name is required</span>
           </div>
 
-          <!-- Date input field -->
+          <!-- Date Input -->
           <div class="flex flex-col">
             <label class="block">
-              <span class="text-gray-700">Date</span>
-              <span style="color: #ff0000">*</span>
-              <input
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="event.date" type="date" />
+              <span class="text-gray-700">Date</span><span style="color: #ff0000">*</span>
+              <input type="date" class="w-full rounded-md border-gray-300 shadow-sm" v-model="event.date" />
             </label>
-            <!-- Validation error messages -->
             <span v-if="v$.event.date.$error" class="text-red-500">
-              <span v-if="v$.event.date.required.$invalid">
-                Event Date is required
-              </span>
-              <span v-else-if="!v$.event.date.required.$invalid && v$.event.date.validDate.$invalid">
-                Event Date must be a valid date
-              </span>
-              <span
-                v-else-if="!v$.event.date.required.$invalid && !v$.event.date.validDate.$invalid && v$.event.date.notBeforeToday.$invalid">
-                New Event Date cannot be in the past.
-              </span>
+              <span v-if="v$.event.date.required.$invalid">Event Date is required</span>
+              <span v-else-if="v$.event.date.validDate.$invalid">Event Date must be valid</span>
+              <span v-else-if="v$.event.date.notBeforeToday.$invalid">Date cannot be in the past</span>
             </span>
           </div>
-
-          <div></div>
-          <div></div>
-          <!-- Description input field -->
-          <div class="flex col-span-2 flex-col">
-            <label class="block">
-              <span class="text-gray-700">Description</span>
-              <textarea
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                rows="2"></textarea>
-            </label>
-          </div>
         </div>
 
-        <!-- Services Offered at Event checkboxes -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10 mt-10">
-          <h2 class="text-2xl font-bold">Services Offered at Event</h2>
-          <div class="flex flex-col grid-cols-3">
-            <div>
-              <ul v-if="activeServices?.length" class="space-y-2">
-                <li v-for="service in activeServices" :key="service._id" :data-service-id="service._id"
-                  class="rounded-lg border border-gray-300 p-2 hover:bg-gray-100 transition-colors relative">
-                  <label class="block w-full h-full">
-                    <input type="checkbox" :id="service._id" :value="service._id"
-                      :checked="event.services.includes(service._id)" v-model="event.services"
-                      class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mr-2">
-                    <span class="font-medium">{{ service.name }}</span>
-                  </label>
-                </li>
-              </ul> 
-              <!--If there are no active services for the user's organization, this will appear instead of list of checkboxes-->
-              <p v-else class="text-gray-600">No Active Services Available</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- grid container -->
-        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
-          <h2 class="text-2xl font-bold">Address</h2>
-          <!-- Address 1 input field -->
-          <div class="flex flex-col">
-            <label class="block">
-              <span class="text-gray-700">Address Line 1</span>
-              <input type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder v-model="event.address.line1" />
-            </label>
-          </div>
-          <!-- Address 2 input field -->
-          <div class="flex flex-col">
-            <label class="block">
-              <span class="text-gray-700">Address Line 2</span>
-              <input type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder v-model="event.address.line2" />
-            </label>
-          </div>
-          <!-- City input field -->
-          <div class="flex flex-col">
-            <label class="block">
-              <span class="text-gray-700">City</span>
-              <input type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder v-model="event.address.city" />
-            </label>
-          </div>
-          <div></div>
-          <!-- County input field -->
-          <div class="flex flex-col">
-            <label class="block">
-              <span class="text-gray-700">County</span>
-              <input type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder v-model="event.address.county" />
-            </label>
-          </div>
-          <!-- Zip code field -->
-          <div class="flex flex-col">
-            <label class="block">
-              <span class="text-gray-700">Zip Code</span>
-              <input type="text"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                placeholder v-model="event.address.zip" />
-            </label>
-          </div>
-        </div>
-
-        <!--Add New Event submit button-->
-        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
-          <div></div>
-          <div class="flex justify-between mr-20">
-            <button class="bg-red-700 text-white rounded" type="submit">
-              Add New Event
-            </button>
-          </div>
+        <!-- Submit Button -->
+        <div class="mt-10 flex justify-between">
+          <button class="bg-red-700 text-white rounded px-4 py-2" type="submit">Add New Event</button>
         </div>
       </form>
     </div>
   </main>
 </template>
 
-<!-- change from options API to composition API -->
-<script setup>
+<script>
 import { ref, onMounted } from 'vue';
+import useVuelidate from '@vuelidate/core';
+import { required } from '@vuelidate/validators';
+import { getServices, createEvent } from '../api/api';
 import { useToast } from 'vue-toastification';
-import { useLoggedInUserStore } from '../store/loggedInUser';
-import { useRouter } from 'vue-router';
-import { useVuelidate } from '@vuelidate/core';  // Import Vuelidate
-import { required, helpers, minLength } from '@vuelidate/validators'; // ✅ Import validation rules
 
-// Initialize event object
-const event = ref({
-  name: '',
-  description: '',
-  date: '',
-  services: [],
-  address: {
-    line1: '',
-    line2: '',
-    city: '',
-    county: '',
-    zip: '',
-  }
-});
+export default {
+  setup() {
+    const toast = useToast();
 
-// Define validation rules
-const rules = {
-  event: {
-    name: { required: helpers.withMessage('Event Name is required', required) },
-    date: {
-      required: helpers.withMessage('Event Date is required', required),
-      validDate: (value) => !isNaN(Date.parse(value)), // Ensures it's a valid date
-      notBeforeToday: (value) => new Date(value) >= new Date(), // Ensures date is not in the past
-    }
+    // Define reactive state for event data
+    const event = ref({
+      name: '',
+      date: '',
+      services: [],
+      address: { line1: '', line2: '', city: '', county: '', zip: '' }
+    });
+
+    // Store active services
+    const activeServices = ref([]);
+
+    // Validation rules
+    const rules = {
+      event: {
+        name: { required },
+        date: {
+          required,
+          validDate: (value) => !isNaN(new Date(value)),
+          notBeforeToday: (value) => new Date(value) >= new Date().setHours(0, 0, 0, 0)
+        }
+      }
+    };
+
+    const v$ = useVuelidate(rules, { event });
+
+    // Fetch services when component is mounted
+    onMounted(async () => {
+      try {
+        const response = await getServices();
+        activeServices.value = response.filter(service => service.status === "Active");
+      } catch (error) {
+        toast.error("Error loading services");
+      }
+    });
+
+    // Handle form submission
+    const handleSubmitForm = async () => {
+      v$.value.$validate();
+      if (v$.value.$error) {
+        toast.error('Please fix input errors');
+        return;
+      }
+      try {
+        await createEvent(event.value);
+        toast.success("Event created successfully");
+      } catch (error) {
+        toast.error("Error creating event");
+      }
+    };
+
+    return { event, activeServices, handleSubmitForm, v$ };
   }
 };
-
-// Initialize validation instance
-const v$ = useVuelidate(rules, { event });
-
-const toast = useToast();
-const router = useRouter();
-const user = useLoggedInUserStore();
-
-// Load data when component is mounted
-onMounted(() => {
-  fetchOrgName();
-});
-
-// Function to fetch organization name
-async function fetchOrgName() {
-  try {
-    orgName.value = await getOrgName();
-  } catch (error) {
-    toast.error("Error fetching organization name");
-  }
-}
-
-// Function to handle form submission
-async function handleSubmitForm() {
-  const isFormValid = await v$.value.$validate(); // Validate form
-
-  if (!isFormValid) {
-    toast.error("Please fix validation errors before submitting.");
-    return;
-  }
-
-  try {
-    // Handle event submission logic
-    console.log("Form submitted successfully", event.value);
-  } catch (error) {
-    toast.error(error.message);
-  }
-}
 </script>
+
