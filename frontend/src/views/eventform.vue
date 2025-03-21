@@ -160,10 +160,10 @@ import { ref, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useLoggedInUserStore } from '../store/loggedInUser';
 import { useRouter } from 'vue-router';
-import { useVuelidate } from '@vuelidate/core';  // ✅ Import Vuelidate
+import { useVuelidate } from '@vuelidate/core';  // Import Vuelidate
 import { required, helpers, minLength } from '@vuelidate/validators'; // ✅ Import validation rules
 
-// ✅ Initialize event object
+// Initialize event object
 const event = ref({
   name: '',
   description: '',
@@ -178,7 +178,7 @@ const event = ref({
   }
 });
 
-// ✅ Define validation rules
+// Define validation rules
 const rules = {
   event: {
     name: { required: helpers.withMessage('Event Name is required', required) },
@@ -190,7 +190,7 @@ const rules = {
   }
 };
 
-// ✅ Initialize validation instance
+// Initialize validation instance
 const v$ = useVuelidate(rules, { event });
 
 const toast = useToast();
@@ -211,7 +211,7 @@ async function fetchOrgName() {
   }
 }
 
-// ✅ Function to handle form submission
+// Function to handle form submission
 async function handleSubmitForm() {
   const isFormValid = await v$.value.$validate(); // Validate form
 

@@ -1,3 +1,4 @@
+<!-- please refer to prompt six in the sources folder -->
 <!-- This view displays a list of events. Users can search for events, and click on an event to be redirected to another component to view that event's details -->
 <template>
   <main>

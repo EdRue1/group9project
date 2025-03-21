@@ -1,3 +1,5 @@
+<!-- please refer to prompt seven in the sources folder -->
+<!-- This view shows a list of services. Users can search for services and click on a service to be redirected to another component that displays the service's details -->
 <template>
   <main>
     <div>
