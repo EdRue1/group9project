@@ -1,3 +1,4 @@
+<!-- prompt 15 in sources -->
 <!-- This is the home view - which shows a dashboard -->
 <template>
   <main>

@@ -1,5 +1,6 @@
 <!-- This is the login view. Users can login by entering a correct username and password -->
 <!-- username: user and password: password -->
+<!-- prompt 13 in sources -->
 <template>
   <div>
     <!--Header-->

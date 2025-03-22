@@ -1,3 +1,4 @@
+<!-- prompt 14 in sources -->
 <template>
   <div>
     <canvas class="p-10" ref="attendanceChart"></canvas>

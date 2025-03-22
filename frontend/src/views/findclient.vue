@@ -1,3 +1,4 @@
+<!-- see prompt 12 in SOURCES -->
 <!-- This view displays a list of clients. The user can search for clients, and click on a client to redirect to another component to view that client's information -->
 <template>
   <main>

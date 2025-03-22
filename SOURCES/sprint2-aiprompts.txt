@@ -216,3 +216,59 @@ here is my code. can you swap this from options to composition API, and add comm
 ---
 
 answer is pasted in eventform.vue file
+
+
+
+-------------
+Prompt 12
+-------------
+
+*Attached initial findclient.vue file*
+
+Can you swap the code in here from Options API to Composition API?
+
+---
+
+Answer is in findclient.vue file
+
+
+
+-------------
+Prompt 13
+-------------
+
+*attached initial login.vue file*
+
+the code is currently in options api. Can you switch it to composition and add comments?
+
+---
+
+answer is pasted in login.vue file
+
+
+
+-------------
+Prompt 14
+-------------
+
+*attached initial barchart.vue file*
+
+the code is currently in options api. Can you switch it to composition and add comments?
+
+---
+
+answer in barchart.vue file
+
+
+
+-------------
+Prompt 15
+-------------
+
+*attached initial home.vue file*
+
+swap from options to composition API
+
+---
+
+response can be found in home.vue file
