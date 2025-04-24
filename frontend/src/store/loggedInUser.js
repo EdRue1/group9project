@@ -10,41 +10,42 @@ const toast = useToast()
 // Defining a store
 export const useLoggedInUserStore = defineStore({
   id: 'loggedInUser',
-  state: () => {
-    return {
-      name: "",
-      role: "",
-      isLoggedIn: false
-    }
-  },
+  state: () => ({
+    name: "",
+    role: "",
+    isLoggedIn: false,
+    token: ""
+  }),
   actions: {
     async login(username, password) {
       try {
-        const token = await loginUser(username, password);
-        // Get the user's name and role from the JWT token
+        const { token, role } = await loginUser(username, password);
         const decodedToken = jwt_decode(token);
+
         this.$patch({
           isLoggedIn: true,
-          role: decodedToken.role,
-          name: decodedToken.name
+          role: role || decodedToken.role,
+          name: decodedToken.name,
+          token: token
         });
-        this.$router.push("/");
-        toast.success("Login Sucessful!")
 
-      } catch ( error ) {
-        toast.error(error.message)
+        localStorage.setItem('userRole', this.role);
+        this.$router.push("/");
+        toast.success("Login Successful!");
+      } catch (error) {
+        toast.error(error.message);
       }
     },
     logout() {
       logoutUser();
-      // Reset value after user log out
-      this.$patch({
-        name: "",
-        role: "",
-        isLoggedIn: false
-      });
-      this.$router.push("/");
-      toast.info("You have been logged out!")
+      this.$reset();
+      localStorage.removeItem('userRole');
+      this.$router.push("/login");
+      toast.info("You have been logged out!");
     }
   },
+  getters: {
+    isEditor: (state) => state.role === 'editor',
+    isViewer: (state) => state.role === 'viewer'
+  }
 });

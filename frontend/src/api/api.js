@@ -45,13 +45,16 @@ export async function loginUser(username, password) {
     const token = response.data.token;
     localStorage.setItem("authToken", token);
     setAuthHeader(token);
-    return token;
+    return {
+      token: token,
+      role: response.data.role
+    };
   } catch (error) {
     if (error.response.status === 400) {
       let errorString = getErrorMessageFromResponseBody(
         error.response.data.message
       );
-      throw new Error(errorString); // API errors get thrown here
+      throw new Error(errorString);
     } else throw error;
   }
 }

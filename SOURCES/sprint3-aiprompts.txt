@@ -1,0 +1,11 @@
+-------------
+Prompt 1
+-------------
+
+*attached api.js, loggedInUser.js, and index.js*
+
+can you modify the login function to store the user's role after successful authentication? i have all relevant files attached
+
+---
+
+answer is pasted in api.js, loggedInUser.js, and index.js files
