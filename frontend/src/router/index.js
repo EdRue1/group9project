@@ -105,6 +105,7 @@ const router = createRouter({
 router.beforeEach((to) => {
   const store = useLoggedInUserStore();
 
+  // Redirect unauthenticated users from protected routes
   if (to.meta.requiresAuth && !store.isLoggedIn) {
     return {
       path: '/login',
@@ -112,11 +113,17 @@ router.beforeEach((to) => {
     };
   }
 
-  if (to.meta.accessibleTo && !to.meta.accessibleTo.includes(store.role)) {
-    toast.warning("You don't have permission to access this page");
+  // If route defines roles and user is logged in but has wrong role
+  if (
+    to.meta.accessibleTo &&
+    store.isLoggedIn &&
+    !to.meta.accessibleTo.includes(store.role)
+  ) {
+    console.warn("Blocked: Unauthorized access attempt to", to.fullPath);
     return '/';
   }
 });
+
 
 export default router
 

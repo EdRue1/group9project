@@ -309,10 +309,10 @@ export const deleteClientbyId = async (id) => {
 // API call to get events for dashboard
 export const getClientsByZipCode = async () => {
   try {
-    const response = await apiClient.get("/clients/byzip");
+    const response = await apiClient.get("http://localhost:3000/clients/byzip"); // bypassing the token by using regular axios get
     return response.data;
   } catch (error) {
-    throw error.response.data;
+    throw error.response?.data || error;
   }
 };
 

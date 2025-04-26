@@ -188,6 +188,7 @@ export default {
             message: err.message
           }
         }
+        recentEvents.value = [] // ADD THIS to allow dashboard to load without logging in
       }
       loading.value = false
     }
