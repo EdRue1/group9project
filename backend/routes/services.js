@@ -6,13 +6,13 @@ const router = express.Router();
 const { services, events } = require('../models/models');
 
 // Middleware for authorization. For API calls that require authorization, this middleware checks if the header of API calls have a valid security token. If no security token or invalid security token, then the API call is not made.
-const authMiddleWare = require('../auth/authMiddleWare');
+const { authenticateUser, authorizeEditor } = require('../auth/authMiddleWare');
 
 // org id from environment
 const org = process.env.ORG_ID;
 
 // API endpoint to all services for org
-router.get('/', authMiddleWare, (req, res, next) => {
+router.get('/', authenticateUser, (req, res, next) => {
   services
     .find({ org: org }, (error, data) => {
       if (error) {
@@ -25,7 +25,7 @@ router.get('/', authMiddleWare, (req, res, next) => {
 });
 
 // API endpoint to GET single service by ID
-router.get('/id/:id', authMiddleWare, (req, res, next) => {
+router.get('/id/:id', authenticateUser, (req, res, next) => {
   services.findOne({ _id: req.params.id, org: org }, (error, data) => {
     if (error) {
       return next(error);
@@ -38,7 +38,7 @@ router.get('/id/:id', authMiddleWare, (req, res, next) => {
 });
 
 // API endpoint to GET entries based on search query
-router.get('/search', authMiddleWare, (req, res, next) => {
+router.get('/search', authenticateUser, (req, res, next) => {
   const dbQuery = { org: org };
   switch (req.query.searchBy) {
     case 'name':
@@ -62,8 +62,8 @@ router.get('/search', authMiddleWare, (req, res, next) => {
   });
 });
 
-// API endpoint to POST new service
-router.post('/', authMiddleWare, (req, res, next) => {
+// API endpoint to POST new service, added editors only
+router.post('/', authenticateUser,authorizeEditor, (req, res, next) => {
   const newService = req.body;
   newService.org = [org];
   services.create(newService, (error, data) => {
@@ -75,8 +75,8 @@ router.post('/', authMiddleWare, (req, res, next) => {
   });
 });
 
-// API endpoint to PUT -> update service
-router.put('/update/:id', authMiddleWare, (req, res, next) => {
+// API endpoint to PUT -> update service, added editors only
+router.put('/update/:id', authenticateUser, authorizeEditor, (req, res, next) => {
   services.findByIdAndUpdate(req.params.id, req.body, (error, data) => {
     if (error) {
       return next(error);
@@ -89,8 +89,8 @@ router.put('/update/:id', authMiddleWare, (req, res, next) => {
   });
 });
 
-// API endpoint to hard DELETE event by ID
-router.delete('/:id', authMiddleWare, async (req, res, next) => {
+// API endpoint to hard DELETE event by ID, added editors only
+router.delete('/:id', authenticateUser, authorizeEditor, async (req, res, next) => {
   // only delete service if no events are using that service
   const serviceEvents = await events.find({ services: req.params.id, org: org })
 
